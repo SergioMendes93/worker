@@ -18,7 +18,7 @@ func main() {
 	for i < 10 {
 		if i == 0 || i == 2 || i == 4 || i == 6 || i == 8  {
 			var out, stderr bytes.Buffer	
-			cmd := exec.Command("docker", "-H", "tcp://" + ip + ":2376", "run", "-v", "/home/smendes:/tmp/workdir", "-w=/tmp/workdir", "-c", "1024", "-m", "2000000000", "jrottenberg/ffmpeg", "-i", "BeachWaves1.flac", "resultadoo.dvd", "-y")
+			cmd := exec.Command("docker", "-H", "tcp://" + ip + ":2376", "run", "-v", "/home/smendes/worker:/tmp/workdir", "-w=/tmp/workdir", "-c", "1024", "-m", "2000000000", "jrottenberg/ffmpeg", "-i", "BeachWaves1.flac", "resultadoo.dvd", "-y")
 
 			cmd.Stdout = &out
 			cmd.Stderr = &stderr
@@ -49,7 +49,7 @@ func main() {
 			i++
 			time.Sleep(time.Minute * 5)
 		} else  {
-			cmd := exec.Command("docker", "-H", "tcp://" + ip + ":2376", "run", "-v", "/home/smendes:/ne/input", "-c", "1024", "-m", "2000000000", "alexjc/neural-enhance", "--zoom=2", "input/buga1.png")
+			cmd := exec.Command("docker", "-H", "tcp://" + ip + ":2376", "run", "-v", "/home/smendes/worker:/ne/input", "-c", "1024", "-m", "2000000000", "alexjc/neural-enhance", "--zoom=2", "input/buga1.png")
 			var out, stderr bytes.Buffer	
 	
 			cmd.Stdout = &out
