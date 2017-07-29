@@ -7,17 +7,18 @@ import (
 	"time"
 	"bytes"
 	"strconv"
+	"net"
 )
 
 func main() {
 	
 	i := 0
+	ip := getIPAddress()
 
 	for i < 10 {
 		if i == 0 || i == 2 || i == 4 || i == 6 || i == 8  {
-			i++
 			var out, stderr bytes.Buffer	
-			cmd := exec.Command("docker", "-H", "tcp://10.5.60.1:2376", "run", "-v", "/home/smendes:/tmp/workdir", "-w=/tmp/workdir", "-c", "1024", "-m", "2000000000", "jrottenberg/ffmpeg", "-i", "BeachWaves1.flac", "resultadoo.dvd", "-y")
+			cmd := exec.Command("docker", "-H", "tcp://" + ip + ":2376", "run", "-v", "/home/smendes:/tmp/workdir", "-w=/tmp/workdir", "-c", "1024", "-m", "2000000000", "jrottenberg/ffmpeg", "-i", "BeachWaves1.flac", "resultadoo.dvd", "-y")
 
 			cmd.Stdout = &out
 			cmd.Stderr = &stderr
@@ -26,6 +27,8 @@ func main() {
 			if err := cmd.Run(); err != nil {
 				fmt.Println("Not scheduled")
 				fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+				time.Sleep(time.Second * 5)
+				continue
 			} 	
 			finish := time.Since(start)
 
@@ -39,15 +42,14 @@ func main() {
 	
 			finishTime := strconv.FormatFloat(finish.Seconds(), 'f', -1, 64)
 			
-			fmt.Println("Elapsed time: " + finishTime)
 
         		if _, err3 = fileTime.WriteString("FFmpeg time: " + finishTime + "\n"); err3 != nil {
                 		panic(err3)
 			}
+			i++
 			time.Sleep(time.Minute * 5)
 		} else  {
-			i++
-			cmd := exec.Command("docker", "-H", "tcp://10.5.60.1:2376", "run", "-v", "/home/smendes:/ne/input", "-c", "1024", "-m", "2000000000", "alexjc/neural-enhance", "--zoom=2", "input/buga1.png")
+			cmd := exec.Command("docker", "-H", "tcp://" + ip + ":2376", "run", "-v", "/home/smendes:/ne/input", "-c", "1024", "-m", "2000000000", "alexjc/neural-enhance", "--zoom=2", "input/buga1.png")
 			var out, stderr bytes.Buffer	
 	
 			cmd.Stdout = &out
@@ -57,6 +59,8 @@ func main() {
 			if err := cmd.Run(); err != nil {
 				fmt.Println("Not scheduled")
 				fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+				time.Sleep(time.Second * 5)
+				continue
 			} 
 			finish := time.Since(start)
 
@@ -73,9 +77,27 @@ func main() {
         		if _, err3 = fileTime.WriteString("enhance time: " + finishTime + "\n"); err3 != nil {
                 		panic(err3)
 			}
-			fmt.Println("Elapsed time: " + finishTime)
+			i++
 
 			time.Sleep(time.Minute * 5)
 		}
 	}
+}
+
+func getIPAddress() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	count := 0
+	for _, a := range addrs {
+		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil && count == 1{
+				fmt.Println(ipnet.IP.String())
+				return ipnet.IP.String()
+			}
+			count++
+		}
+	}
+	return ""
 }
