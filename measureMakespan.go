@@ -41,9 +41,9 @@ func main() {
         		defer fileTime.Close()
 	
 			finishTime := strconv.FormatFloat(finish.Seconds(), 'f', -1, 64)
-			
+			tempo := time.Now()
 
-        		if _, err3 = fileTime.WriteString("FFmpeg time: " + finishTime + "\n"); err3 != nil {
+        		if _, err3 = fileTime.WriteString("FFmpeg:" + finishTime + ",time:" + tempo.String() + "\n"); err3 != nil {
                 		panic(err3)
 			}
 			i++
@@ -73,8 +73,10 @@ func main() {
         		defer fileTime.Close()
 	
 			finishTime := strconv.FormatFloat(finish.Seconds(), 'f', -1, 64)
+			 
+			tempo := time.Now()
 
-        		if _, err3 = fileTime.WriteString("enhance time: " + finishTime + "\n"); err3 != nil {
+        		if _, err3 = fileTime.WriteString("enhance:" + finishTime + ",time:" + tempo.String() + "\n"); err3 != nil {
                 		panic(err3)
 			}
 			i++
